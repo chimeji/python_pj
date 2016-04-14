@@ -12,10 +12,10 @@ nbpass = alphalen**passlen
 estimatedTime = (nbpass/100000)*16
 start_time = time.time()
 
-print 'alphalen : ' + str(alphalen)
-print 'nbpass   : ' + str(nbpass)
-print '16 sec for 100000 gen'
-print 'Estimated time : ' + str(estimatedTime) + ' sec'
+print ('alphalen :  '+ str(alphalen))
+print ('nbpass   : ' + str(nbpass))
+print ('16 sec for 100000 gen')
+print ('Estimated time : ' + str(estimatedTime) + ' sec')
 m, s = divmod(estimatedTime, 60)
 h, m = divmod(m, 60)
 #for i in range(100000):
@@ -38,9 +38,9 @@ while True:
 	passWord = crypt(wordI, mySalt)
 
 	#Affichage si OK
-	print 'Word : ' + wordI + ' Crypt : ' + passWord + ' i : ' + str(i)
-	#if passWord == searchWord:
-		print 'Word : ' + wordI + ' Crypt : ' + passWord + ' i : ' + str(i)
-		print("Exec Time : %s" % (time.time() - start_time))
+	print ('Word : ' + wordI + ' Crypt : ' + passWord + ' i : ' + str(i))
+	if passWord == searchWord:
+		print ('Word : ' + wordI + ' Crypt : ' + passWord + ' i : ' + str(i))
+		print ("Exec Time : %s" % (time.time() - start_time))
 		break
 	i = i + 1
