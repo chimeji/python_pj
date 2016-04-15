@@ -2,46 +2,59 @@
 from passlib.hash import sha256_crypt as sha256
 import time
 
-searchWord='KSIdqhF5l6N2s'
-alphabet = 'abcefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"&#{[-|_^@]=+.,:;?!$'
-#alphabet = 'abcefghijklmnopqrstuvwxyz{[-|_^@]=+.:;?!'
+#Bases
+majuscule = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+majLen = len(majuscule)
+
+minuscule = 'abcdefghijklmnopqrstuvwxyz'
+minLen = len(minuscule)
+
+symbole = '!'
+symLen = len(symbole)
+
+chiffre = '0123456789'
+chiLen = len(chiffre)
+
+#Password
 passlen = 8
 mySalt = 'KS'
+searchWord='KSIdqhF5l6N2s'
 
-alphalen = len(alphabet)
-nbpass = alphalen**passlen 
-estimatedTime = (nbpass/100000)*16
-start_time = time.time()
+############
+# loopCode #
+############
+def loop_code(start, stop, findWord, salt, bases):
+	loopCount = 0
+	for i in range(start, stop):
+		car1 = bases[0][i]
+		for car2 in bases[1]:
+			for car3 in bases[2]:
+				for car4 in bases[3]:
+					for car5 in bases[4]:
+						for car6 in bases[5]:
+							for car7 in bases[6]:
+								for car8 in bases[7]:
+									word = car1 + car2 + car3 + car4 + car5 + car6 + car7 + car8
+									password = sha256.encrypt(word, salt=mySalt, rounds=5000, implicit_rounds=True)
+									print (str(loopCount) + " word : " + word + " password : " + password)
+									loopCount = loopCount + 1
 
-print ('alphalen :  '+ str(alphalen))
-print ('nbpass   : ' + str(nbpass))
-print ('16 sec for 100000 gen')
-print ('Estimated time : ' + str(estimatedTime) + ' sec')
-m, s = divmod(estimatedTime, 60)
-h, m = divmod(m, 60)
-#for i in range(100000):
 
-#Boucle infinie
-i = 0
-while True:
-	#Generation chaine
-	car8 = alphabet[(i%(alphalen**8))//alphalen**7]
-	car7 = alphabet[(i%(alphalen**7))//alphalen**6]
-	car6 = alphabet[(i%(alphalen**6))//alphalen**5]
-	car5 = alphabet[(i%(alphalen**5))//alphalen**4]
-	car4 = alphabet[(i%(alphalen**4))//alphalen**3]
-	car3 = alphabet[(i%(alphalen**3))//alphalen**2]
-	car2 = alphabet[(i%(alphalen**2))//alphalen**1]
-	car1 = alphabet[(i%(alphalen**1))]
-	wordI = car8 + car7 + car6 + car5 + car4 + car3 + car2 + car1 
+def ten_loop_code(findWord, salt, bases):
+	#Nombre d'iteration par boucle: nombre de base / 10
+	iteration = len(bases[0])//10
+	print("Nombre d'iteration par boucle : " + iteration)
+	for i in range (1,10):
+		start = 
+	loop_code(start, stop, findWord, salt, bases)
+	return 1
 
-	#Cryptage
-	passWord = sha256.encrypt(wordI, salt=mySalt, rounds=5000, implicit_rounds=True)
+################
+# MAIN PROGRAM #
+################
+tabBase = [majuscule, minuscule, minuscule, minuscule, symbole, chiffre, chiffre, chiffre]
 
-	#Affichage si OK
-	print ('Word : ' + wordI + ' Crypt : ' + passWord + ' i : ' + str(i))
-	if passWord == searchWord:
-		print ('Word : ' + wordI + ' Crypt : ' + passWord + ' i : ' + str(i))
-		print ("Exec Time : %s" % (time.time() - start_time))
-		break
-	i = i + 1
+ten_loop_code(0, 5, searchWord, mySalt, tabBase)
+#Cryptage
+#passWord = sha256.encrypt(wordI, salt=mySalt, rounds=5000, implicit_rounds=True)
+
