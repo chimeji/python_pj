@@ -15,7 +15,7 @@ symLen = len(symbole)
 chiffre = '0123456789'
 chiLen = len(chiffre)
 
-#Password
+#Encryption parameters
 passlen = 8
 mySalt = 'KS'
 searchWord='KSIdqhF5l6N2s'
@@ -35,26 +35,48 @@ def loop_code(start, stop, findWord, salt, bases):
 							for car7 in bases[6]:
 								for car8 in bases[7]:
 									word = car1 + car2 + car3 + car4 + car5 + car6 + car7 + car8
-									password = sha256.encrypt(word, salt=mySalt, rounds=5000, implicit_rounds=True)
-									print (str(loopCount) + " word : " + word + " password : " + password)
+									encrypted = sha256.encrypt(word, salt=mySalt, rounds=5000, implicit_rounds=True)
+									print (str(loopCount) + " word : " + word + " encrypted : " + encrypted)
 									loopCount = loopCount + 1
 
 
 def ten_loop_code(findWord, salt, bases):
+
 	#Nombre d'iteration par boucle: nombre de base / 10
-	iteration = len(bases[0])//10
-	print("Nombre d'iteration par boucle : " + iteration)
-	for i in range (1,10):
-		start = 
-	loop_code(start, stop, findWord, salt, bases)
+	iterationNb = len(bases[0])//10
+	print("Nombre d'iteration par boucle : " + str(iterationNb))
+
+	#Boucle sur les serie de nombre
+	start = 0
+	stop = start + iterationNb
+	while stop < len(bases[0]):
+		print("start = " + bases[0][start] + " stop = " + bases[0][stop])
+		loop_code(start, stop, findWord, salt, bases)
+		start = stop + 1
+		stop = start + iterationNb
+
+	#Last round
+	if len(bases[0])%10 != 0:
+		stop = len(bases[0])-1
+		print("start = " + bases[0][start] + " stop = " + bases[0][stop])
+		loop_code(start, stop, findWord, salt, bases)
 	return 1
 
 ################
 # MAIN PROGRAM #
 ################
-tabBase = [majuscule, minuscule, minuscule, minuscule, symbole, chiffre, chiffre, chiffre]
 
-ten_loop_code(0, 5, searchWord, mySalt, tabBase)
+tabBase = [majuscule, minuscule, minuscule, minuscule, symbole, chiffre, chiffre, chiffre]
+nbComb = 1
+for base in tabBase:
+	nbComb = nbComb * len(base)
+print("Number of combinaison ", nbComb)
+
+ten_loop_code(searchWord, mySalt, tabBase)
+
+
+
+
 #Cryptage
 #passWord = sha256.encrypt(wordI, salt=mySalt, rounds=5000, implicit_rounds=True)
 
