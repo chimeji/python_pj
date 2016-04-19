@@ -8,7 +8,7 @@ if __name__ == '__main__':
 	# PARAMETERS   #
 	################
 	#Timeout
-	timeout = 5
+	timeout = 10
 
 	#Bases
 	majuscule = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -50,6 +50,11 @@ if __name__ == '__main__':
 	for nbLoop in nbLoops:
 		total = total + nbLoop.value
 	print("Number of loops in " + str(timeout) + " secs : " + str(total))
+	estimatedSec = nbComb // (total//timeout)
+	estimatedMin = estimatedSec//60
+	estimatedHour = estimatedMin//60
+	print("Estimated Min : " + str(estimatedMin))
+	print("Estimated Hour : " + str(estimatedHour))
 
 
 
