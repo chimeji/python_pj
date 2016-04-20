@@ -29,10 +29,11 @@ if __name__ == '__main__':
 	nbComb = 1
 	for base in tabBase:
 		nbComb = nbComb * len(base)
-	print("Number of combination ", nbComb)
+	print("Number of combination " +  str(nbComb))
+	print("Timeout : " +  str(timeout))
 
 
-	nbLoops = [multiprocessing.Value('i',0) for i in range(1,5)] 
+	nbLoops = [multiprocessing.Value('i',0) for i in range(1,40)] 
 	processList = []
 	stopEvent = multiprocessing.Event()
 
