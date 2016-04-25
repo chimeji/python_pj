@@ -1,4 +1,3 @@
-#from crypt import crypt
 import loopCodeFunctions as lcf
 import multiprocessing
 import time
@@ -8,14 +7,15 @@ if __name__ == '__main__':
 	# PARAMETERS   #
 	################
 	#Timeout
-	timeout = 5 
+	timeout = 100
+ 
 
 	#Bases
 	majuscule = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	minuscule = 'abcdefghijklmnopqrstuvwxyz'
-	symbole = '!'
+	symbole = '!,;:$'
 	chiffre = '0123456789'
-	test = 'ABcde'
+	all = majuscule + minuscule + symbole + chiffre
 
 	################
 	# MAIN PROGRAM #
@@ -23,9 +23,10 @@ if __name__ == '__main__':
 
 	#Encryption parameters
 	bases = [majuscule, minuscule, minuscule, minuscule, symbole, chiffre, chiffre, chiffre]
-	bases = [test, test, test, test, test, test, test, test]
-	salt = 'KS'
-	findWord='KSIdqhF5l6N2s'
+	bases = [majuscule, minuscule, minuscule, symbole, chiffre, chiffre, chiffre, chiffre]
+	bases = [all,all,all,all,all,all,all,all]
+	salt = 'zj'
+	findWord='zjE4k2Ky3/gug'
 
 	#Show estimation
 	nbComb = 1
@@ -36,22 +37,31 @@ if __name__ == '__main__':
 
 
 	#Start multiLoopCode
-	loopCodeNb = 3
+	loopCodeNb = 20 
 	loopCountTab = [multiprocessing.Value('i',0) for i in range(0,loopCodeNb)] 
 
 	stopEvent = multiprocessing.Event()
-	lcf.multiLoopCode(findWord, salt, bases, loopCountTab, stopEvent)
+	processTab = []
+	lcf.multiLoopCode(findWord, salt, bases, loopCountTab, processTab, stopEvent)
+	
 	
 	#Wait 10 sec
 	time.sleep(timeout)
 	
 	#Stop multiLoopCode
-	stopEvent.set()
+	#stopEvent.set()
+
+
+	#Wait until all process finish
+	for p in processTab:
+		p.join()
 
 	#Print estimation
 	total = 0 
 	for nbLoop in loopCountTab:
 		total = total + nbLoop.value
+	print("Number of combination " +  str(nbComb))
+	print("Timeout : " +  str(timeout))
 	print("Number of loops in " + str(timeout) + " secs : " + str(total))
 	estimatedSec = nbComb // (total//timeout)
 	estimatedMin = estimatedSec//60

@@ -1,69 +1,91 @@
-#from crypt import crypt
+from crypt import crypt
 import multiprocessing
-from passlib.hash import sha256_crypt as sha256
+#from passlib.hash import sha256_crypt as sha256
 
 ############
 # LoopCode #
 ############
-def loopCode(start, stop, findWord, salt, bases, loopCount, stopEvent):
-	loopCount.value = 0
-	for i in range(start, stop):
-		car1 = bases[0][i]
-		print("LOOPCODE  - bases[0][" + str(i) + "] = " + str(bases[0][i]) + " started")
-		for car2 in bases[1]:
-			for car3 in bases[2]:
-				for car4 in bases[3]:
-					for car5 in bases[4]:
-						for car6 in bases[5]:
-							for car7 in bases[6]:
-								for car8 in bases[7]:
-									word = car1 + car2 + car3 + car4 + car5 + car6 + car7 + car8
-									encrypted = sha256.encrypt(word, salt=salt, rounds=5000, implicit_rounds=True)
-									#encrypted = crypt(word, salt)
-									current =  str(loopCount.value) + " word : " + word + " encrypt : " + encrypted
-									loopCount.value = loopCount.value + 1
-									print(current)
-									if encrypted == findWord:
-										print("LOOPCODE  - Found !!! : " + current)
-										stopEvent.set()
-										return
-									if stopEvent.is_set():
-										print("LOOPCODE  - Stopped : " + current)
-										return
+def loopCode(start, stop, findWord, salt, bases, baseNumbers, loopCount, stopEvent):
+	nb = start
+	print("LOOPCODE - START [{}, {}] ".format(start, stop))
+	while nb < stop:
+		d8 = nb//baseNumbers[7]
+		d7 = nb%baseNumbers[7]//baseNumbers[6]
+		d6 = nb%baseNumbers[7]%baseNumbers[6]//baseNumbers[5]
+		d5 = nb%baseNumbers[7]%baseNumbers[6]%baseNumbers[5]//baseNumbers[4]
+		d4 = nb%baseNumbers[7]%baseNumbers[6]%baseNumbers[5]%baseNumbers[4]//baseNumbers[3]
+		d3 = nb%baseNumbers[7]%baseNumbers[6]%baseNumbers[5]%baseNumbers[4]%baseNumbers[3]//baseNumbers[2]
+		d2 = nb%baseNumbers[7]%baseNumbers[6]%baseNumbers[5]%baseNumbers[4]%baseNumbers[3]%baseNumbers[2]//baseNumbers[1]
+		d1 = nb%baseNumbers[7]%baseNumbers[6]%baseNumbers[5]%baseNumbers[4]%baseNumbers[3]%baseNumbers[2]%baseNumbers[1]//baseNumbers[0]
+		word = bases[0][d8] + bases[1][d7] + bases[2][d6] + bases[3][d5] + bases[4][d4] + bases[5][d3] + bases[6][d2] + bases[7][d1]
+		nb = nb + 1
 
-	print("LOOPCODE - Finished : " + current)
+		#Encrypt word
+		#encrypted = sha256.encrypt(word, salt=salt, rounds=5000, implicit_rounds=True)
+		encrypted = crypt(word, salt)
+		current =  str(nb)  + " : " + word + "  ---->  " + encrypted
+		#print(current)
+	
+		#print("{} [{} {} {} {} {} {} {} {}] = ".format(nb,d8,d7,d6,d5,d4,d3,d2,d1) + bases[0][d8] + bases[1][d7] + bases[2][d6] + bases[3][d5] + bases[4][d4] + bases[5][d3] + bases[6][d2] + bases[7][d1])
+
+		#Test word
+		if encrypted == findWord:
+			print("LOOPCODE  - FOUND !!! : " + current)
+			loopCount.value = nb - start + 1
+			stopEvent.set()
+			return
+
+		#Kill loop
+		if stopEvent.is_set():
+			print("LOOPCODE  - KILLED : " + current)
+			loopCount.value = nb - start + 1
+			return
+	
+	#Loop finished without finding target
+	print("LOOPCODE - FINISHED : " + current)
+	loopCount.value = nb - start + 1
+	return
 
 #################
 # MultiLoopCode #
 #################
-def multiLoopCode(findWord, salt, bases, loopCountTab, stopEvent):
+def multiLoopCode(findWord, salt, bases, loopCountTab, processTab, stopEvent):
 
-	#Nombre d'iteration par boucle: nombre de base / nombre de loopCode voulu
-	loopCodeNb = len(loopCountTab)
-	iterationNb = len(bases[0])//loopCodeNb
-	print("MULTILOOP - Number of loopCode oject : " + str(loopCodeNb + 1))
-	print("MULTILOOP - Iteration per loopCode : " + str(iterationNb + 1))
+	baseNumbers = [] 
 
+	#Number of combination
+	nbComb = 1
+	for base in bases:
+		nbComb = nbComb * len(base)	
+
+	#Calcul de la baseNumber
+	currentBaseNumber  = 1
+	baseNumbers.append(currentBaseNumber)
+	for i in range(len(bases)-1,-1,-1):
+		currentBaseNumber = currentBaseNumber * len(bases[i])
+		baseNumbers.append(currentBaseNumber)
+	print(bases)
+	print(baseNumbers)
+
+	stop = nbComb
+
+	iterationByLoop = nbComb // len(loopCountTab)
 	
-	#Boucle les serie de nombre
-	loopI = 0 
-	start = 0
-	stop = start + iterationNb
-	while stop < len(bases[0]):
-		print("MULTILOOP - Iteration " + str(loopI) + " [" + bases[0][start] + "  " + bases[0][stop] + "] started")
-		p = multiprocessing.Process(target=loopCode, args=(start, stop, findWord, salt, bases, loopCountTab[loopI], stopEvent))
+	start = 0	
+	stop = 0 
+	for i in range(len(loopCountTab) - 1):
+		stop = stop + iterationByLoop
+		p = multiprocessing.Process(target=loopCode, args=(start, stop, findWord, salt, bases, baseNumbers, loopCountTab[i], stopEvent))
 		p.start()
-
+		processTab.append(p)
 		start = stop + 1
-		stop = start + iterationNb
-		loopI = loopI + 1
 
-	#Last round
-	if len(bases[0])%10 != 0:
-		stop = len(bases[0])-1
-		print("MULTILOOP - Iteration " + str(loopI) + " [" + bases[0][start] + "  " + bases[0][stop] + "] started")
-		p = multiprocessing.Process(target=loopCode, args=(start, stop, findWord, salt, bases, loopCountTab[loopI], stopEvent))
-		p.start()
+
+	#Last loop
+	stop = nbComb
+	p = multiprocessing.Process(target=loopCode, args=(start, stop, findWord, salt, bases, baseNumbers, loopCountTab[i], stopEvent))
+	p.start()
+	processTab.append(p)
 	return
 
 

@@ -22,7 +22,7 @@ def loopCode(start, stop, findWord, salt, bases, loopCount, stopEvent):
 									encrypted = crypt(word, salt)
 									current =  str(loopCount.value) + " word : " + word + " encrypt : " + encrypted
 									loopCount.value = loopCount.value + 1
-									print(current)
+									#print(current)
 									if encrypted == findWord:
 										print("LOOPCODE  - Found !!! : " + current)
 										stopEvent.set()

@@ -8,7 +8,7 @@ if __name__ == '__main__':
 	# PARAMETERS   #
 	################
 	#Timeout
-	timeout = 7000 
+	timeout = 10
 
 	#Bases
 	majuscule = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
 	#Encryption parameters
 	bases = [majuscule, minuscule, minuscule, minuscule, symbole, chiffre, chiffre, chiffre]
-	bases = [test, test, test, test, test, test, test, test]
+	#bases = [test, test, test, test, test, test, test, test]
 	salt = 'KS'
 	findWord='KSIdqhF5l6N2s'
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
 
 	#Start multiLoopCode
-	loopCodeNb = 3
+	loopCodeNb = 10
 	loopCountTab = [multiprocessing.Value('i',0) for i in range(0,loopCodeNb)] 
 
 	stopEvent = multiprocessing.Event()
